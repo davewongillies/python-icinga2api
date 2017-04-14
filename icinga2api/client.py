@@ -7,10 +7,12 @@ programmatic way using HTTP requests.
 '''
 
 from __future__ import print_function
-import logging
-import os
+import icinga2api
 import requests
+import logging
 import sys
+import os
+
 # pylint: disable=import-error,no-name-in-module
 if sys.version_info >= (3, 0):
     from urllib.parse import urljoin
@@ -20,7 +22,6 @@ else:
     import ConfigParser as configparser
 # pylint: enable=import-error,no-name-in-module
 
-import icinga2api
 
 requests.packages.urllib3.disable_warnings()
 
