@@ -215,10 +215,12 @@ class Client(object):
             config_from_file.key
         self.ca_certificate = ca_certificate or \
             config_from_file.ca_certificate
-        self.objects = Objects(self)
+
         self.actions = Actions(self)
         self.events = Events(self)
+        self.objects = Objects(self)
         self.status = Status(self)
+        self.templates = Templates(self)
         self.version = icinga2api.__version__
 
         if not self.url:
@@ -344,14 +346,6 @@ class Base(object):
             else:
                 message += char
 
-
-class Objects(Base):
-    '''
-    Icinga 2 API objects class
-    '''
-
-    base_url_path = 'v1/objects'
-
     @staticmethod
     def _convert_object_type(object_type=None):
         '''
@@ -403,6 +397,14 @@ class Objects(Base):
                 ))
 
         return type_conv[object_type]
+
+
+class Objects(Base):
+    '''
+    Icinga 2 API objects class
+    '''
+
+    base_url_path = 'v1/objects'
 
     def get(self,
             object_type,
@@ -1208,3 +1210,48 @@ class Status(Base):
             url += "/{}".format(component)
 
         return self._request('GET', url)
+
+
+class Templates(Base):
+    '''
+    Icinga 2 API template class
+    '''
+
+    base_url_path = 'v1/templates'
+
+    def list(self,
+             object_type,
+             name=None,
+             filter=None,
+             ):
+        '''
+        get object by type or name
+
+        :param object_type: type of the object
+        :type object_type: string
+        :param name: list object with this name
+        :type name: string
+        :param filter: filter the object list
+        :type filter: string
+
+        example 1:
+        list('Host')
+
+        example 2:
+        list('Service', 'webserver01.domain!ping4')
+
+        example 4:
+        list('Host', filter='match("webserver*", host.name)')
+
+        '''
+
+        object_type_url_path = self._convert_object_type(object_type)
+        url_path = '{}/{}'.format(self.base_url_path, object_type_url_path)
+        if name:
+            url_path += '/{}'.format(name)
+
+        payload = {}
+        if filter:
+            payload['filter'] = filter
+
+        return self._request('GET', url_path, payload)['results']
