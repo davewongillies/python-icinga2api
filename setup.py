@@ -19,4 +19,5 @@ setup(
     packages=[PACKAGE],
     zip_safe=False,
     long_description=open("README.md").read(),
+    install_requires=['requests>=1.0.4']
 )
